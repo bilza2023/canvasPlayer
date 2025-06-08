@@ -1,0 +1,22 @@
+{
+  "name": "canvasplayer",
+  "version": "1.0.0",
+  "description": "Pixi.js-based slide player",
+  "main": "index.js",
+  "exports": {
+    ".": {
+      "import": "./index.js",
+      "require": "./index.js"
+    }
+  },
+  "type": "module",
+  "scripts": {
+    "test": "jest"
+  },
+  "keywords": ["pixi", "canvas", "slides", "animation", "player"],
+  "author": "Taleem.Help",
+  "license": "MIT",
+  "dependencies": {
+    "pixi.js": "^6.5.10"
+  }
+}
