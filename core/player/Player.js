@@ -69,8 +69,8 @@ export  class Player {
   renderCurrentSlide() {
     const slide = this.currentSlide;
   
-    // Step 1: Draw background with access to assets
-    this.drawEngine.drawBackground(slide.background, this.assets);
+    // // Step 1: Draw background with access to assets
+    // this.drawEngine.drawBackground(slide.background, this.assets);
   
     // Step 2: Run animations
     // runAnimations(slide.items ?? [], this.currentTime);

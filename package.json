@@ -1,6 +1,6 @@
 {
-  "name": "canvasplayer",
-  "version": "0.0.1",
+  "name": "taleem-canvasplayer",
+  "version": "0.0.2",
   "description": "Pixi.js-based slide player",
   "main": "index.js",
   "exports": {

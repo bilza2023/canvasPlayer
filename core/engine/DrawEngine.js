@@ -26,7 +26,8 @@ export default class DrawEngine {
   
   
   draw(slide, currentTime,assets={}) {
-    // ✅ Skip background — already drawn by Player using drawBackground()
+    // Step 1: Draw background with access to assets
+    this.drawBackground(slide.background,assets);
   
     // Clear previous items
     this.itemLayer.removeChildren();
