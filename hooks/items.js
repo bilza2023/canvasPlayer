@@ -1,311 +1,169 @@
-
+// drawItems.js — PURE RENDER FUNCTIONS
 import * as PIXI from 'pixi.js';
 import Icons from '../core/engine/Icons.js';
-import toPixiColor from "./toPixiColor.js";
-// === TEXT ===
-export function drawText(props = {}) {
-  // debugger;
-  const merged = {
-    text: 'Default Text',
-    type: 'text',
-    x: 0,
-    y: 0,
-    width: 1020,              // default to full screen width
-    fontSize: 36,
-    fontFamily: 'Arial',
-    color: 0x000000,
-    textAlign: 'left',        // new: honor layout intent
-    rotation: 0,
-    visible: true,
-    ...props,
-  };
+import toPixiColor from './toPixiColor.js';
 
-  // toPixiColor
-  merged.color = toPixiColor(merged.color); 
-  const fontKey = `Font_${merged.fontFamily}_${merged.fontSize}`;
+export function drawText(item = {}) {
+  const color = toPixiColor(item.color);
+  const fontKey = `Font_${item.fontFamily}_${item.fontSize}`;
 
   if (!PIXI.BitmapFont.available[fontKey]) {
     PIXI.BitmapFont.from(fontKey, {
-      fontFamily: merged.fontFamily,
-      fontSize: merged.fontSize,
-      fill: merged.color,
+      fontFamily: item.fontFamily,
+      fontSize: item.fontSize,
+      fill: color,
     });
   }
 
-  const text = new PIXI.BitmapText(merged.text, {
+  const text = new PIXI.BitmapText(item.text, {
     fontName: fontKey,
-    fontSize: merged.fontSize,
-    tint: merged.color,
+    fontSize: item.fontSize,
+    tint: color,
   });
 
-  // === Alignment logic ===
-  if (merged.textAlign === 'center') {
-    text.anchor.set(0.5, 0);                         // center
-    text.x = merged.x + merged.width / 2;
-  } else if (merged.textAlign === 'right') {
-    text.anchor.set(1, 0);                           // right-align
-    text.x = merged.x + merged.width;
+  if (item.textAlign === 'center') {
+    text.anchor.set(0.5, 0);
+    text.x = item.x + item.width / 2;
+  } else if (item.textAlign === 'right') {
+    text.anchor.set(1, 0);
+    text.x = item.x + item.width;
   } else {
-    text.anchor.set(0, 0);                           // left-align
-    text.x = merged.x;
+    text.anchor.set(0, 0);
+    text.x = item.x;
   }
 
-  text.y = merged.y;
-  text.rotation = merged.rotation;
-  text.visible = merged.visible;
+  text.y = item.y;
+  text.rotation = item.rotation;
+  text.visible = item.visible;
   return text;
 }
 
-// === ICON ===
-export function drawIcon(props = {}) {
-  const merged = {
-    iconName: 'BULB',
-    type : 'icon',
-    x: 0,
-    y: 0,
-    width: 100,
-    color: 0xffffff,
-    fontFamily: 'Arial',
-    rotation: 0,
-    visible: true,
-    ...props,
-  };
-
-  const icon = Icons[merged.iconName];
-  if (!icon) throw new Error(`Icon "${merged.iconName}" not found in Icons`);
+export function drawIcon(item = {}) {
+  const icon = Icons[item.iconName];
+  if (!icon) throw new Error(`Icon "${item.iconName}" not found in Icons`);
 
   const text = new PIXI.Text(icon, {
-    fontSize: merged.width,
-    fill: merged.color,
-    fontFamily: merged.fontFamily,
+    fontSize: item.width,
+    fill: item.color,
+    fontFamily: item.fontFamily,
   });
 
-  text.x = merged.x;
-  text.y = merged.y;
-  text.rotation = merged.rotation;
-  text.visible = merged.visible;
+  text.x = item.x;
+  text.y = item.y;
+  text.rotation = item.rotation;
+  text.visible = item.visible;
   return text;
 }
 
-// === RECTANGLE ===
-export function drawRect(props = {}) {
-  const merged = {
-    type : 'rect',
-    x: 0,
-    y: 0,
-    width: 200,
-    height: 100,
-    color: 0x00ccff,
-    rotation: 0,
-    visible: true,
-    ...props,
-  };
-
+export function drawRect(item = {}) {
   const rect = new PIXI.Graphics();
-  rect.beginFill(merged.color);
-  rect.drawRect(0, 0, merged.width, merged.height);
+  rect.beginFill(item.color);
+  rect.drawRect(0, 0, item.width, item.height);
   rect.endFill();
-
-  rect.x = merged.x;
-  rect.y = merged.y;
-  rect.rotation = merged.rotation;
-  rect.visible = merged.visible;
+  rect.x = item.x;
+  rect.y = item.y;
+  rect.rotation = item.rotation;
+  rect.visible = item.visible;
   return rect;
 }
 
-// === CIRCLE ===
-export function drawCircle(props = {}) {
-  const merged = {
-    type : 'circle',
-    x: 0,
-    y: 0,
-    radius: 50,
-    color: 0xff6666,
-    rotation: 0,
-    visible: true,
-    ...props,
-  };
-
+export function drawCircle(item = {}) {
   const circle = new PIXI.Graphics();
-  circle.beginFill(merged.color);
-  circle.drawCircle(0, 0, merged.radius);
+  circle.beginFill(item.color);
+  circle.drawCircle(0, 0, item.radius);
   circle.endFill();
-
-  circle.x = merged.x;
-  circle.y = merged.y;
-  circle.rotation = merged.rotation;
-  circle.visible = merged.visible;
+  circle.x = item.x;
+  circle.y = item.y;
+  circle.rotation = item.rotation;
+  circle.visible = item.visible;
   return circle;
 }
 
-// === TRIANGLE ===
-export function drawTriangle(props = {}) {
-  const merged = {
-    type : 'triangle',
-    x: 0,
-    y: 0,
-    size: 100,
-    color: 0x66ff66,
-    rotation: 0,
-    visible: true,
-    ...props,
-  };
-
-  const triHeight = merged.size * 0.86;
+export function drawTriangle(item = {}) {
+  const triHeight = item.size * 0.86;
   const triangle = new PIXI.Graphics();
-  triangle.beginFill(merged.color);
+  triangle.beginFill(item.color);
   triangle.moveTo(0, 0);
-  triangle.lineTo(merged.size, 0);
-  triangle.lineTo(merged.size / 2, triHeight);
+  triangle.lineTo(item.size, 0);
+  triangle.lineTo(item.size / 2, triHeight);
   triangle.lineTo(0, 0);
   triangle.endFill();
-
-  triangle.x = merged.x;
-  triangle.y = merged.y;
-  triangle.rotation = merged.rotation;
-  triangle.visible = merged.visible;
+  triangle.x = item.x;
+  triangle.y = item.y;
+  triangle.rotation = item.rotation;
+  triangle.visible = item.visible;
   return triangle;
 }
 
-// === IMAGE ===
-export function drawImage(props = {}, assets = {}) {
-  
-  const merged = {
-    type: 'image',
-    x: 0,
-    y: 0,
-    width: 100,
-    height: 100,
-    src: 'book',
-    rotation: 0,
-    visible: true,
-    ...props,
-  };
-
-  const texture = assets[merged.src];
+export function drawImage(item = {}, assets = {}) {
+  const texture = assets[item.src];
   if (!texture) {
-    console.warn(`⚠️ Image asset "${merged.src}" not found in assets map.`);
-    return new PIXI.Sprite(PIXI.Texture.WHITE); // or return null
+    console.warn(`⚠️ Image asset "${item.src}" not found in assets map.`);
+    return new PIXI.Sprite(PIXI.Texture.WHITE);
   }
-
   const sprite = new PIXI.Sprite(texture);
-  sprite.x = merged.x;
-  sprite.y = merged.y;
-  sprite.width = merged.width;
-  sprite.height = merged.height;
-  sprite.rotation = merged.rotation;
-  sprite.visible = merged.visible;
-
+  sprite.x = item.x;
+  sprite.y = item.y;
+  sprite.width = item.width;
+  sprite.height = item.height;
+  sprite.rotation = item.rotation;
+  sprite.visible = item.visible;
   return sprite;
 }
 
-
-export function drawRichText(props = {}) {
-  const merged = {
-    text: "Default rich text",
-    type: "richText",
-    x: 0,
-    y: 0,
-    width: 800,
-    height: 200,
-    fontSize: 36,
-    fontFamily: "Georgia",
-    color: 0x000000,
-    textAlign: "left",
-    lineHeight: 1.5,
-    rotation: 0,
-    visible: true,
-    ...props
-  };
-
-  merged.color = toPixiColor(merged.color);
-
-  const text = new PIXI.Text(merged.text, {
-    fontFamily: merged.fontFamily,
-    fontSize: merged.fontSize,
-    fill: merged.color,
-    align: merged.textAlign,
+export function drawRichText(item = {}) {
+  const color = toPixiColor(item.color);
+  const text = new PIXI.Text(item.text, {
+    fontFamily: item.fontFamily,
+    fontSize: item.fontSize,
+    fill: color,
+    align: item.textAlign,
     wordWrap: true,
-    wordWrapWidth: merged.width,
-    lineHeight: merged.lineHeight * merged.fontSize
+    wordWrapWidth: item.width,
+    lineHeight: item.lineHeight * item.fontSize,
   });
-
-  text.x = merged.x;
-  text.y = merged.y;
-  text.rotation = merged.rotation;
-  text.visible = merged.visible;
-
+  text.x = item.x;
+  text.y = item.y;
+  text.rotation = item.rotation;
+  text.visible = item.visible;
   return text;
 }
 
-export function drawTable(props = {}) {
-  const merged = {
-    type: "table",
-    x: 0,
-    y: 0,
-    width: 800,
-    height: 400,
+export function drawTable(item = {}) {
+  const rows = item.rows.map(r => Array.isArray(r) ? r : r.cells);
+  if (!rows.length) return new PIXI.Container();
 
-    rows: [],              // array of arrays OR array of {cells:[]}
-    fontSize: 28,
-    fontFamily: "Arial",
+  const numRows = rows.length;
+  const numCols = rows[0].length;
+  const rowHeight = item.rowHeight || item.height / numRows;
+  const cellWidth = item.width / numCols;
 
-    textColor:  "#ffffff", // visible by default
-    borderColor:"#333333",
-    borderWidth: 2,
-
-    padding: 10,
-    rowHeight: 50,         // fallback – recalculated below if 0
-    visible:  true,
-    ...props,
-  };
-
-  /* ---------- normalise rows ---------- */
-  const normalisedRows = merged.rows.map(r => Array.isArray(r) ? r : r.cells);
-  if (!normalisedRows.length) return new PIXI.Container();
-
-  const numRows   = normalisedRows.length;
-  const numCols   = normalisedRows[0].length;
-  const rowHeight = merged.rowHeight || merged.height / numRows;
-  const cellWidth = merged.width  / numCols;
-
-  /* ---------- colour conversion ---------- */
-  const txtCol  = toPixiColor(merged.textColor);
-  const brdCol  = toPixiColor(merged.borderColor);
-
-  /* ---------- container ---------- */
+  const txtCol = toPixiColor(item.textColor);
+  const brdCol = toPixiColor(item.borderColor);
   const container = new PIXI.Container();
-  container.position.set(merged.x, merged.y);
-  container.visible = merged.visible;
+  container.position.set(item.x, item.y);
+  container.visible = item.visible;
 
-  /* ---------- build cells ---------- */
-  normalisedRows.forEach((row, rIdx) => {
+  rows.forEach((row, rIdx) => {
     const y = rIdx * rowHeight;
-
     row.forEach((cellText, cIdx) => {
       const x = cIdx * cellWidth;
-
-      /* border (optional) */
-      if (merged.borderWidth > 0) {
+      if (item.borderWidth > 0) {
         const rect = new PIXI.Graphics();
-        rect.lineStyle(merged.borderWidth, brdCol, 1);
+        rect.lineStyle(item.borderWidth, brdCol, 1);
         rect.drawRect(x, y, cellWidth, rowHeight);
         container.addChild(rect);
       }
-
-      /* text */
       const textObj = new PIXI.Text(String(cellText), {
-        fontFamily : merged.fontFamily,
-        fontSize   : merged.fontSize,
-        fill       : txtCol,
-        wordWrap   : true,
-        wordWrapWidth : cellWidth - 2 * merged.padding,
-        align      : "center"
+        fontFamily: item.fontFamily,
+        fontSize: item.fontSize,
+        fill: txtCol,
+        wordWrap: true,
+        wordWrapWidth: cellWidth - 2 * item.padding,
+        align: "center"
       });
-
-      // centre text inside its cell
-      textObj.x = x + (cellWidth  - textObj.width ) / 2;
-      textObj.y = y + (rowHeight  - textObj.height) / 2;
+      textObj.x = x + (cellWidth - textObj.width) / 2;
+      textObj.y = y + (rowHeight - textObj.height) / 2;
       container.addChild(textObj);
     });
   });
@@ -313,68 +171,37 @@ export function drawTable(props = {}) {
   return container;
 }
 
-// drawArc.js
-
-export function drawArc(props = {}) {
-  const merged = {
-    type: "arc",
-    x: 0,
-    y: 0,
-    radius: 100,
-    innerRadius: 0,
-    startAngle: 0,
-    endAngle: Math.PI * 2,
-    color: 0x00ff00,
-    rotation: 0,
-    visible: true,
-    ...props
-  };
-
+export function drawArc(item = {}) {
   const g = new PIXI.Graphics();
-  g.beginFill(toPixiColor(merged.color));
-
-  const resolution = 50; // Higher = smoother
+  g.beginFill(toPixiColor(item.color));
+  const resolution = 50;
 
   const drawRingSegment = (r1, r2, angleStart, angleEnd) => {
     const angleStep = (angleEnd - angleStart) / resolution;
-    g.moveTo(
-      merged.x + r1 * Math.cos(angleStart),
-      merged.y + r1 * Math.sin(angleStart)
-    );
-
+    g.moveTo(item.x + r1 * Math.cos(angleStart), item.y + r1 * Math.sin(angleStart));
     for (let i = 0; i <= resolution; i++) {
       const a = angleStart + i * angleStep;
-      g.lineTo(
-        merged.x + r1 * Math.cos(a),
-        merged.y + r1 * Math.sin(a)
-      );
+      g.lineTo(item.x + r1 * Math.cos(a), item.y + r1 * Math.sin(a));
     }
-
     for (let i = resolution; i >= 0; i--) {
       const a = angleStart + i * angleStep;
-      g.lineTo(
-        merged.x + r2 * Math.cos(a),
-        merged.y + r2 * Math.sin(a)
-      );
+      g.lineTo(item.x + r2 * Math.cos(a), item.y + r2 * Math.sin(a));
     }
   };
 
-  if (merged.innerRadius > 0) {
-    drawRingSegment(merged.radius, merged.innerRadius, merged.startAngle, merged.endAngle);
+  if (item.innerRadius > 0) {
+    drawRingSegment(item.radius, item.innerRadius, item.startAngle, item.endAngle);
   } else {
-    g.moveTo(merged.x, merged.y);
+    g.moveTo(item.x, item.y);
     for (let i = 0; i <= resolution; i++) {
-      const a = merged.startAngle + (i / resolution) * (merged.endAngle - merged.startAngle);
-      g.lineTo(
-        merged.x + merged.radius * Math.cos(a),
-        merged.y + merged.radius * Math.sin(a)
-      );
+      const a = item.startAngle + (i / resolution) * (item.endAngle - item.startAngle);
+      g.lineTo(item.x + item.radius * Math.cos(a), item.y + item.radius * Math.sin(a));
     }
-    g.lineTo(merged.x, merged.y); // Close pie
+    g.lineTo(item.x, item.y);
   }
 
   g.endFill();
-  g.rotation = merged.rotation;
-  g.visible = merged.visible;
+  g.rotation = item.rotation;
+  g.visible = item.visible;
   return g;
 }

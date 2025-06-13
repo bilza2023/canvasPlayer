@@ -1,6 +1,6 @@
 {
   "name": "taleem-canvasplayer",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Pixi.js-based slide player",
   "main": "index.js",
   "exports": {
@@ -23,7 +23,8 @@
   "author": "Taleem.Help",
   "license": "MIT",
   "dependencies": {
-    "pixi.js": "^6.5.10"
+    "pixi.js": "^6.5.10",
+    "zod": "^3.25.64"
   },
   "devDependencies": {
     "jsdom": "^26.1.0",
