@@ -68,18 +68,27 @@ export  class Player {
 
   renderCurrentSlide() {
     const slide = this.currentSlide;
+    const timeOffset = this.currentTime - slide.startTime;
   
-    // // Step 1: Draw background with access to assets
-    // this.drawEngine.drawBackground(slide.background, this.assets);
+    // Step 1: Filter visible items by showAt
+    const visibleItems = (slide.items ?? []).filter(item => {
+      return typeof item.showAt === "number" && item.showAt <= timeOffset;
+    });
   
-    // Step 2: Run animations
-    // runAnimations(slide.items ?? [], this.currentTime);
-     (slide.items ?? []).forEach(item =>
-        runAnimations(item, this.currentTime)
-     );
-    // Step 3: Draw items
-    this.drawEngine.draw(slide, this.currentTime,this.assets);
+    // Step 2: Run animations only for visible items
+    visibleItems.forEach(item =>
+      runAnimations(item, this.currentTime)
+    );
+  
+    // Step 3: Draw filtered slide copy
+    const visibleSlide = {
+      ...slide,
+      items: visibleItems
+    };
+  
+    this.drawEngine.draw(visibleSlide, this.currentTime, this.assets);
   }
+  
   
 
   updateIndexByTime(time) {
