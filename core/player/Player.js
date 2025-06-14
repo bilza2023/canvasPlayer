@@ -65,22 +65,17 @@ export  class Player {
     this.timeSource.reset();    // 2️⃣ rewind to 0 without auto-play
     this.setTime(0);            // 3️⃣ render first frame
   }
-
   renderCurrentSlide() {
     const slide = this.currentSlide;
-    const timeOffset = this.currentTime - slide.startTime;
   
-    // Step 1: Filter visible items by showAt
     const visibleItems = (slide.items ?? []).filter(item => {
-      return typeof item.showAt === "number" && item.showAt <= timeOffset;
+      return typeof item.showAt === "number" && item.showAt <= this.currentTime;
     });
   
-    // Step 2: Run animations only for visible items
     visibleItems.forEach(item =>
       runAnimations(item, this.currentTime)
     );
   
-    // Step 3: Draw filtered slide copy
     const visibleSlide = {
       ...slide,
       items: visibleItems
@@ -88,7 +83,6 @@ export  class Player {
   
     this.drawEngine.draw(visibleSlide, this.currentTime, this.assets);
   }
-  
   
 
   updateIndexByTime(time) {

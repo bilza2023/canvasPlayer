@@ -1,6 +1,7 @@
+
 // DrawEngine.js
+
 import * as PIXI from "pixi.js";
-import getBackgroundColor from "./getBackgroundColor.js";
 import { drawItem } from "../../hooks/drawItem.js";
 import { drawBackground } from "../../hooks/drawBackground/drawBackground.js";
 
@@ -23,7 +24,6 @@ export default class DrawEngine {
       assets
     );
   }
-  
   
   draw(slide, currentTime,assets={}) {
     // Step 1: Draw background with access to assets
