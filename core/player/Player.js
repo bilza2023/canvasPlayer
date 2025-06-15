@@ -1,9 +1,11 @@
 
 // Player.js
-import * as PIXI from "pixi.js";
-import toPixiColor from "./toPixiColor.js";
-import DrawEngine from "../engine/DrawEngine.js";
-import { runAnimations } from "../../hooks/simpleAnim.js";
+import * as PIXI from           "pixi.js";
+import { Howl } from            "howler";
+import toPixiColor from         "./toPixiColor.js";
+import DrawEngine from          "../engine/DrawEngine.js";
+import IntervalTicker from      "../ticker/IntervalTicker.js";
+import { runAnimations } from   "../../hooks/simpleAnim.js";
 
 export class Player {
   constructor({
@@ -12,11 +14,10 @@ export class Player {
     width = 1020,
     height = 576,
     backgroundColor = "#000",
-    timeSource,
+    sound = null,
     assets = {},
     autoResize = true
   }) {
- ////////////////////////////////////////////   
     this.app = new PIXI.Application({
       width,
       height,
@@ -27,21 +28,40 @@ export class Player {
     });
 
     mountEl.appendChild(this.app.view);
-
     this.mountEl = mountEl;
     this.autoResize = autoResize;
 
     if (this.autoResize) {
       window.addEventListener("resize", () => this.resize());
-      this.resize(); // initial call
+      this.resize();
     }
 
     this.slides = deckData;
-    this.timeSource = timeSource;
     this.currentIndex = 0;
     this.currentTime = 0;
     this.drawEngine = new DrawEngine(this.app);
     this.setAssets(assets);
+
+    if (sound instanceof Howl) {
+      this.sound = sound;
+      this.getTime = () => sound.seek();
+      this.play = () => {
+        sound.play();
+        this.startLoop();  // ✅ start rendering loop
+      };
+      this.pause = () => sound.pause();
+      this.isPlaying = () => sound.playing();
+    } else {
+      const ticker = new IntervalTicker();
+      this.getTime = () => ticker.getTime();
+      this.play = () => {
+        ticker.play();
+        this.startLoop();  // ✅ start rendering loop
+      };
+      this.pause = () => ticker.pause();
+      this.isPlaying = () => ticker.isPlaying();
+    }
+    
   }
 
   resize() {
@@ -59,6 +79,23 @@ export class Player {
     this.app.view.style.height = `${height * scale}px`;
     this.app.view.style.display = "block";
     this.app.view.style.margin = "0 auto";
+  }
+
+  setAssets(assets = {}) {
+    this.assets = {};
+    for (const [key, url] of Object.entries(assets)) {
+      this.assets[key] = PIXI.Texture.from(url);
+    }
+  }
+
+  setTime(time) {
+    this.currentTime = time;
+    this.updateIndexByTime(time);
+    this.renderCurrentSlide();
+  }
+
+  getCurrentTime() {
+    return this.currentTime;
   }
 
   renderCurrentSlide() {
@@ -80,43 +117,16 @@ export class Player {
     this.drawEngine.draw(visibleSlide, this.currentTime, this.assets);
   }
 
-  setAssets(assets = {}) {
-    this.assets = {};
-    for (const [key, url] of Object.entries(assets)) {
-      this.assets[key] = PIXI.Texture.from(url);
-    }
-  }
-  
-
-  setTime(time) {
-    this.currentTime = time;
-    this.updateIndexByTime(time);
-    this.renderCurrentSlide();
-  }
-
-  play() {
-    this.timeSource.play();
-
-    // ✅ Defer loop to allow layout to settle
-    requestIdleCallback(() => {
-      this.startLoop();
-    });
-  }
-
-  getCurrentTime() {
-    return this.currentTime;
-  }
-
   startLoop() {
     const maxTime = this.slides[this.slides.length - 1].endTime;
 
     const loop = () => {
-      if (!this.timeSource.isPlaying()) return;
+      if (!this.isPlaying()) return;
 
-      const t = this.timeSource.getTime();
+      const t = this.getTime();
       if (t >= maxTime) {
-        this.timeSource.pause(); // stop audio + ticker
-        this.setTime(maxTime);   // clamp at end
+        this.pause();
+        this.setTime(maxTime);
         return;
       }
 
@@ -128,9 +138,11 @@ export class Player {
   }
 
   reset() {
-    this.timeSource.pause?.();  // 1️⃣ stop sound / ticker
-    this.timeSource.reset();    // 2️⃣ rewind to 0 without auto-play
-    this.setTime(0);            // 3️⃣ render first frame
+    this.pause?.();
+    if (this.sound instanceof Howl) {
+      this.sound.seek(0);
+    }
+    this.setTime(0);
   }
 
   updateIndexByTime(time) {
